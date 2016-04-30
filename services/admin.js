@@ -13,10 +13,6 @@ exports.doSearchAdmin = function(msg, callback)
   var searchType = msg.searchType;
 	var collectionName = msg.collectionName;	
 
-  console.log("search"+searchString);
-  console.log("type"+searchType);
-  console.log("name"+collectionName);
-
   mongo.searchItAdmin(collectionName, searchString, searchType, function(err,searchRes){
 
     if(err){
