@@ -72,7 +72,7 @@ exports.handle_request=function(msg, callback)
 
 
                                 var customerCreditCardDetails = {
-                                    "USER_ID": msg.userId,
+                                    "USER_ID": userId,
                                     CREDIT_CARD_DETAILS:
                                     {
                                         "CREDIT_CARD_NUMBER": msg.creditCardNumber,

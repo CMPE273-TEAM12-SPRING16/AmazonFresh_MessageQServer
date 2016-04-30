@@ -68,7 +68,23 @@ cnn.on('ready', function(){
 
                 });
             }
+
             // Aneri
+
+            else if (message.functionToBeImplemented == "fetchPurchaseHistory")
+            {
+                users.handle_request1(message, function (err, res) {
+
+                    //return index sent
+                    cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                    });
+
+                });
+            }
+
         });
     });
 });

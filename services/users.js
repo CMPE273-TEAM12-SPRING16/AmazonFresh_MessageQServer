@@ -15,9 +15,28 @@ exports.handle_request=function(msg, callback) {
         }
         else {
 console.log(result);
-            res.customerDetails=result;
-            callback(null, res);
+            var jsonResponse={"customerDetails":result};
+            //res.customerDetails=result;
+            callback(null, jsonResponse);
         }
     }
     mongo.findOne("CUSTOMER_DETAILS", msg.userId, callbackFunction);
+}
+
+exports.handle_request1=function(msg, callback) {
+
+    var queryJSON = {USER_ID: msg.userId};
+
+    var projectionJSON = {PURCHASE_HISTORY: 1};
+    mongo.findOneWithProjection("CUSTOMER_DETAILS", queryJSON, projectionJSON, function (err, result) {
+        if (err) {
+            console.log(err);
+        } else {
+console.log(result);
+            var jsonResponse={"projection":result};
+            callback(null, jsonResponse);
+
+
+        }
+    });
 }
