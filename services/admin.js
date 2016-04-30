@@ -170,3 +170,25 @@ exports.doRejectCustomer = function(msg, callback){
 
     mongo.updateOne('USER_DETAILS',approvalWhereJSON,approvalSetJSON,callbackFunction);
 }
+
+exports.doShowPendingFarmerAprroval = function(msg, callback){
+  var userId = msg.userId;
+  var getCustomerPendingJSON = msg.getCustomerPendingJSON;
+
+  var callbackFunction = function (err, results) {
+     if(err)
+      {
+        throw err;
+        json_responses = {"statusCode" : 401};
+        console.log("Error in doShowProductList");
+        callback(null, json_responses);
+      }
+      else
+      {
+        json_responses = {"statusCode" : 200,"results":results};
+        callback(null, json_responses);
+      }
+    }
+
+    mongo.find('USER_DETAILS',getCustomerPendingJSON,callbackFunction);
+ }
