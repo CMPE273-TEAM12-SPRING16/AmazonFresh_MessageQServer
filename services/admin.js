@@ -50,7 +50,7 @@ exports.doShowPendingCustAprroval = function(msg, callback) {
       throw err;
       json_responses = {"statusCode" : 401};
       console.log("Error in doShowProductList");
-      //res.send(json_responses);
+      callback(null, json_responses);
     }
     else
     {
@@ -97,3 +97,76 @@ exports.doShowPendingCustAprroval = function(msg, callback) {
 }
     mongo.find('USER_DETAILS',getCustomerPendingJSON,callbackFunction);
 };
+
+exports.doApproveCustomer = function(msg, callback) {
+  var customerId = msg.customerId;
+  console.log("customer is id"+customerId);
+
+  var callbackFunction = function (err, results) {
+           if(err)
+    {
+      throw err;
+      var json_responses = {"statusCode" : 401};
+      console.log("Error in doShowProductList");
+      callback(null, json_responses);
+    }
+    else {
+         var approveUser = "UPDATE USERS set IS_APPROVED= 1 where USER_ID='" + customerId + "'";
+
+         mysql.fetchData(function (err, results) {
+
+           if (results.affectedRows > 0) {
+
+         console.log(results.IS_APPROVED);
+
+         console.log("Approve Requests ");
+         console.log(results);
+         var json_responses = {"statusCode": 200, "results": results};
+         callback(null, json_responses);
+       }
+         },approveUser);
+    }
+    }
+    console.log("doApproveCustomer "+customerId);
+
+    var approvalWhereJSON = {"USER_ID" : customerId};
+    var approvalSetJSON = {$set : {"IS_APPROVED" : 1}};
+
+    mongo.updateOne('USER_DETAILS',approvalWhereJSON,approvalSetJSON,callbackFunction);
+}
+
+exports.doRejectCustomer = function(msg, callback){
+  var customerId = msg.customerId;
+
+
+  var callbackFunction = function (err, results) {
+   if(err)
+    {
+      throw err;
+      json_responses = {"statusCode" : 401};
+      console.log("Error in doShowProductList");
+      res.send(json_responses);
+    }
+    else
+    {
+      var rejectUser = "update USERS set IS_APPROVED= 2 where USER_ID='" + customerId + "'";
+
+      mysql.fetchData(function (err, results) {
+
+        if (results.affectedRows > 0) {
+
+          console.log(results.IS_APPROVED);
+      console.log("Pending customer requests ");
+      console.log(results);
+      json_responses = {"statusCode" : 200,"results":results};
+      callback(null, json_responses);
+        }
+      },rejectUser);
+    }
+    }
+
+    var approvalWhereJSON = {"USER_ID" : customerId};
+    var approvalSetJSON = {$set : {"IS_APPROVED" : 2}};
+
+    mongo.updateOne('USER_DETAILS',approvalWhereJSON,approvalSetJSON,callbackFunction);
+}
