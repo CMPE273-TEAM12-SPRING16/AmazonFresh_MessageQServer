@@ -6,7 +6,7 @@ var mongo = require("./mongo");
 var mongoURL = "mongodb://localhost:27017/amazon_fresh";
 const crypto = require('crypto');
 var res = {};
-exports.handle_request=function(msg, callback) {
+exports.getCustomerAccountDetails=function(msg, callback) {
 
     var callbackFunction = function (err, result) {
 
@@ -23,7 +23,7 @@ console.log(result);
     mongo.findOne("CUSTOMER_DETAILS", msg.userId, callbackFunction);
 }
 
-exports.handle_request1=function(msg, callback) {
+exports.fetchPurchaseHistory =function(msg, callback) {
 
     var queryJSON = {USER_ID: msg.userId};
 

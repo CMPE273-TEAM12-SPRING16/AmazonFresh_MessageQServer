@@ -57,7 +57,7 @@ cnn.on('ready', function(){
             util.log("DeliveryInfo: " + JSON.stringify(deliveryInfo));
             if (message.functionToBeImplemented == "getCustomerAccountDetails")
             {
-                users.handle_request(message, function (err, res) {
+                users.getCustomerAccountDetails(message, function (err, res) {
 
                     //return index sent
                     cnn.publish(m.replyTo, res, {
@@ -73,7 +73,7 @@ cnn.on('ready', function(){
 
             else if (message.functionToBeImplemented == "fetchPurchaseHistory")
             {
-                users.handle_request1(message, function (err, res) {
+                users.fetchPurchaseHistory (message, function (err, res) {
 
                     //return index sent
                     cnn.publish(m.replyTo, res, {
