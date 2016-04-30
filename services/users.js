@@ -11,7 +11,8 @@ var mysql = require('./mysql');
 
 
 exports.getCustomerAccountDetails=function(msg, callback) {
-
+    var queryJSON = {"USER_ID": msg.userId};
+    console.log(msg.userId);
         var callbackFunction = function (err, result) {
 
         if (err) {
@@ -24,13 +25,13 @@ console.log(result);
             callback(null, jsonResponse);
         }
     }
-    mongo.findOne("CUSTOMER_DETAILS", msg.userId, callbackFunction);
+    mongo.findOne("CUSTOMER_DETAILS", queryJSON, callbackFunction);
 }
 
 
 exports.fetchPurchaseHistory =function(msg, callback) {
 
-    var queryJSON = {USER_ID: msg.userId};
+    var queryJSON = {"USER_ID": msg.userId};
 
     var projectionJSON = {PURCHASE_HISTORY: 1};
     mongo.findOneWithProjection("CUSTOMER_DETAILS", queryJSON, projectionJSON, function (err, result) {
