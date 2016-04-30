@@ -255,3 +255,26 @@ exports.doShowPendingFarmerAprroval = function(msg, callback){
 
     mongo.updateOne('USER_DETAILS',approvalWhereJSON,approvalSetJSON,callbackFunction);
  }
+
+ exports.doShowPendingProductAprroval = function(msg, callback) {
+  var userId = msg.userId;
+  var getProductPendingJSON = msg.getProductPendingJSON;
+  
+  var callbackFunction = function (err, results) {
+  if(err)
+    {
+      throw err;
+      json_responses = {"statusCode" : 401};
+      console.log("Error in doShowPendingProductAprroval");
+      callback(null, json_responses);
+    }
+    else
+    {
+      console.log(results);
+      json_responses = {"statusCode" : 200,"results":results};
+      callback(null, json_responses);
+    }
+    }
+
+    mongo.find('PRODUCTS',getProductPendingJSON,callbackFunction);
+ };
