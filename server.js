@@ -85,6 +85,19 @@ cnn.on('ready', function(){
                 });
             }
 
+           else if (message.functionToBeImplemented == "doUpdateUserDetails")
+            {
+                users.doUpdateUserDetails(message, function (err, res) {
+
+                    //return index sent
+                    cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                    });
+
+                });
+            }
             // Aneri
 
             else if (message.functionToBeImplemented == "fetchPurchaseHistory")
