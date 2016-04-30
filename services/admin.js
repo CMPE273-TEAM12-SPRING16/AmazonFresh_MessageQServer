@@ -221,3 +221,37 @@ exports.doShowPendingFarmerAprroval = function(msg, callback){
 
     mongo.updateOne('USER_DETAILS',approvalWhereJSON,approvalSetJSON,callbackFunction);
  }
+
+ exports.doRejectFarmer = function(msg, callback){
+  var customerId = msg.customerId;
+
+
+  var callbackFunction = function (err, results) {
+           if(err)
+    {
+      throw err;
+      json_responses = {"statusCode" : 401};
+      console.log("Error in doShowProductList");
+      callback(null, json_responses);
+    }
+    else
+    {
+      var rejectFarmer = "update USERS set IS_APPROVED=2  where USER_ID=" + customerId + ";";
+
+      mysql.fetchData(function (err, results) {
+
+      if (results.affectedRows > 0) {
+          console.log("Pending customer requests ");
+          console.log(results);
+          json_responses = {"statusCode" : 200,"results":results};
+          callback(null, json_responses);
+        }
+      },rejectFarmer);
+    }
+    }
+
+    var approvalWhereJSON = {"USER_ID" : customerId};
+    var approvalSetJSON = {$set : {"IS_APPROVED" : 2}};
+
+    mongo.updateOne('USER_DETAILS',approvalWhereJSON,approvalSetJSON,callbackFunction);
+ }
