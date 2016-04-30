@@ -6,7 +6,7 @@ var mongo = require("./mongo");
 var mongoURL = "mongodb://localhost:27017/amazon_fresh";
 const crypto = require('crypto');
 var res = {};
-exports.handle_request=function(msg, callback) {
+exports.getCustomerAccountDetails=function(msg, callback) {
 
     var callbackFunction = function (err, result) {
 
@@ -15,9 +15,28 @@ exports.handle_request=function(msg, callback) {
         }
         else {
 console.log(result);
-            res.customerDetails=result;
-            callback(null, res);
+            var jsonResponse={"customerDetails":result};
+            //res.customerDetails=result;
+            callback(null, jsonResponse);
         }
     }
     mongo.findOne("CUSTOMER_DETAILS", msg.userId, callbackFunction);
+}
+
+exports.fetchPurchaseHistory =function(msg, callback) {
+
+    var queryJSON = {USER_ID: msg.userId};
+
+    var projectionJSON = {PURCHASE_HISTORY: 1};
+    mongo.findOneWithProjection("CUSTOMER_DETAILS", queryJSON, projectionJSON, function (err, result) {
+        if (err) {
+            console.log(err);
+        } else {
+console.log(result);
+            var jsonResponse={"projection":result};
+            callback(null, jsonResponse);
+
+
+        }
+    });
 }

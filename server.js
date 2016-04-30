@@ -73,7 +73,7 @@ cnn.on('ready', function(){
             util.log("DeliveryInfo: " + JSON.stringify(deliveryInfo));
             if (message.functionToBeImplemented == "getCustomerAccountDetails")
             {
-                users.handle_request(message, function (err, res) {
+                users.getCustomerAccountDetails(message, function (err, res) {
 
                     //return index sent
                     cnn.publish(m.replyTo, res, {
@@ -84,7 +84,23 @@ cnn.on('ready', function(){
 
                 });
             }
+
             // Aneri
+
+            else if (message.functionToBeImplemented == "fetchPurchaseHistory")
+            {
+                users.fetchPurchaseHistory (message, function (err, res) {
+
+                    //return index sent
+                    cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                    });
+
+                });
+            }
+
         });
     });
 });
