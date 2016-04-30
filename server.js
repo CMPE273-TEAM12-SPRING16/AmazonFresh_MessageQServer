@@ -79,7 +79,34 @@ cnn.on('ready', function(){
 
                     });
                 }
+            else
+                if(message.functionName == "doAddIntroduction")
+                 {
+                    farmer.doAddIntroduction(message, function (err, res) {
 
+                    //return index sent
+                        cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                        });
+
+                    });
+                }
+            else
+                if(message.functionName == "doDeleteProfile")
+                 {
+                    farmer.doDeleteProfile(message, function (err, res) {
+
+                    //return index sent
+                        cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                        });
+
+                    });
+                }
             
         });
     });
