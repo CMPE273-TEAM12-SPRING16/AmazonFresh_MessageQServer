@@ -192,3 +192,36 @@ exports.doShowPendingFarmerAprroval = function(msg, callback){
 
     mongo.find('USER_DETAILS',getCustomerPendingJSON,callbackFunction);
  }
+
+ exports.doApproveFarmer = function(msg, callback){
+  var customerId = msg.customerId;
+
+
+  var callbackFunction = function (err, results) {
+    if(err)
+      {
+        throw err;
+        json_responses = {"statusCode" : 401};
+        console.log("Error in doShowProductList");
+        callback(null, json_responses);
+      }
+      else
+      {
+        var approveFarmer = "UPDATE USERS set IS_APPROVED= 1 where USER_ID='" + customerId + "'";
+
+        mysql.fetchData(function (err, results) {
+
+          if (results.affectedRows > 0) {
+            console.log("Pending customer requests ");
+            json_responses = {"statusCode" : 200,"results":results};
+            callback(null, json_responses);
+            }
+          },approveFarmer);
+        }
+    }
+
+    var approvalWhereJSON = {"USER_ID" : customerId};
+    var approvalSetJSON = {$set : {"IS_APPROVED" : 1}};
+
+    mongo.updateOne('USER_DETAILS',approvalWhereJSON,approvalSetJSON,callbackFunction);
+ }
