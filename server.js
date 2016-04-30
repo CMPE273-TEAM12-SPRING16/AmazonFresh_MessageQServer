@@ -63,6 +63,30 @@ cnn.on('ready', function(){
 
                 });
             }
+            else if(message.functionName == "doApproveCustomer")
+            {
+                admin.doApproveCustomer(message, function (err, res) {
+
+                    cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                    });
+
+                });
+            }
+            else if(message.functionName == "doRejectCustomer")
+            {
+                admin.doRejectCustomer(message, function (err, res) {
+
+                    cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                    });
+
+                });
+            }
         });
     });
 
