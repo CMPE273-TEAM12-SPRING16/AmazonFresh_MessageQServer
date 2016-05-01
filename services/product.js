@@ -92,3 +92,23 @@ exports.getProductDetails=function(msg, callback) {
 
     mongo.findOneUsingId("PRODUCTS", productId, callbackFunction);
 }
+
+
+exports.doFetch10Products=function(msg, callback) {
+
+    getProductJSON = {IS_APPROVED: 1};
+    var callbackFunction = function (err, results) {
+        if (err) {
+            throw err;
+           var json_responses = {"statusCode": 401};
+            console.log("Error in doShowProductList");
+            callback(null,json_responses);
+        }
+        else {
+            var json_responses = {"statusCode": 200, "results": results};
+            callback(null,json_responses);
+        }
+    }
+
+    mongo.find('PRODUCTS', getProductJSON, callbackFunction);
+}
