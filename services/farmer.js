@@ -180,7 +180,7 @@ exports.addFarmerReview = function(msg, callback)
     {
       console.log("Result received in addFarmerReview");
       if(searchRes){
-          mongo.updateOne('PRODUCTS',productWhereJSON,updateAvgRating,function(err,reviews){
+          mongo.updateOne('FARMER_DETAILS',productWhereJSON,updateAvgRating,function(err,reviews){
           if(err){
             throw err;
             json_responses = {"statusCode" : 401};
@@ -204,3 +204,42 @@ exports.addFarmerReview = function(msg, callback)
   });
 }
 
+exports.getFarmerDetails = function(msg, callback)
+{
+  console.log("Product JSON ");
+  
+ var detailJSON = msg.detailJSON;
+
+  mongo.findOne('USER_DETAILS', detailJSON,function(err,searchRes){
+
+    if(err){
+      throw err;
+    }
+    else
+    {
+      console.log("Result received in getFarmerDetails");
+      if(searchRes){
+          mongo.findOne('FARMER_DETAILS', detailJSON,function(err,results){
+          if(err){
+            throw err;
+            json_responses = {"statusCode" : 401};
+            console.log("Error in doShowProductList");
+            res.send(json_responses);
+          }
+        else{
+            var jsonResponse = {
+                                "searchResults" : searchRes,
+                                "results" : results,
+                                "statusCode" : 200
+                        };
+            callback(null, jsonResponse);
+        }
+      });
+    }
+    else {
+        jsonResponse = {result : "Nothing Found", "status" : "OK"};
+        callback(null, jsonResponse);
+      }
+    }
+  });
+}

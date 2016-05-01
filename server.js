@@ -121,6 +121,20 @@ cnn.on('ready', function(){
 
                     });
                 }
+            else
+                if(message.functionName == "getFarmerDetails")
+                 {
+                    farmer.getFarmerDetails(message, function (err, res) {
+
+                    //return index sent
+                        cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                        });
+
+                    });
+                }    
             
         });
     });
