@@ -239,6 +239,18 @@ cnn.on('ready', function(){
 
                 });
             }
+            else if(message.functionName == "doShowAllCustomer")
+            {
+                admin.doShowAllCustomer(message, function (err, res) {
+
+                    cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                    });
+
+                });
+            }
         });
     });
 
