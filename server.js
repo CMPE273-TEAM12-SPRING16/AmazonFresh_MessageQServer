@@ -290,6 +290,31 @@ cnn.on('ready', function(){
 
                 });
             }
+
+            else if(message.functionName == "fetchAllBills") {
+                admin.fetchAllBills(message, function (err, res) {
+
+                    cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                    });
+
+                });
+            }
+            else if(message.functionName == "showDeliveriesStat")
+            {
+                admin.showDeliveriesStat(message, function (err, res) {
+
+                    cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                    });
+
+                });
+            }
+
         });
     });
 
