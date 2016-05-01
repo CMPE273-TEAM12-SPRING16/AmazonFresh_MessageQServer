@@ -17,8 +17,37 @@ exports.doDeleteProduct=function(msg, callback) {
         else {
            var json_responses = {"statusCode": 200, "results": results};
             console.log("result is:" + results);
-            callback(null,json_responses)
+
         }
     }
     mongo.removeOne('PRODUCTS', deleteProductJSON, callbackFunction);
+}
+
+
+
+
+exports.doSearch=function(msg, callback) {
+
+console.log("inside services");
+
+    mongo.searchIt('PRODUCTS', msg.searchString, msg.searchType, function (err, searchRes) {
+
+        if (err) {
+            throw err;
+        }
+        else {
+            if (searchRes) {
+                console.log("product.js : doSearch() --> " + searchRes);
+                var jsonResponse = {
+                    "searchResults": searchRes,
+                    "statusCode": 200
+                };
+                callback(null,jsonResponse)
+            }
+            else {
+                jsonResponse = {result: "Nothing Found", "status": "OK"};
+                callback(null,jsonResponse)
+            }
+        }
+    });
 }

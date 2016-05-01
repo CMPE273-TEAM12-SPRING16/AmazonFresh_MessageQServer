@@ -5,6 +5,7 @@ var logInSignup = require('./services/logInSignup');
 var users = require('./services/users');
 var admin = require('./services/admin');
 var farmer = require('./services/farmer');
+var product=require('./services/product');
 //Gaurav add your file variable here
 var cnn = amqp.createConnection({host:'127.0.0.1'});
 
@@ -313,6 +314,21 @@ cnn.on('ready', function(){
             if (message.functionToBeImplemented == "doDeleteProduct")
             {
                 product.doDeleteProduct(message, function (err, res) {
+
+                    //return index sent
+                    cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                    });
+
+                });
+            }
+
+           else if (message.functionToBeImplemented == "doSearch")
+            {
+                console.log("inside server");
+                product.doSearch(message, function (err, res) {
 
                     //return index sent
                     cnn.publish(m.replyTo, res, {
