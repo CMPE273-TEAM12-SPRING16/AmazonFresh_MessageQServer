@@ -53,10 +53,6 @@ exports.fetchPurchaseHistory =function(msg, callback) {
 exports.doUpdateUserDetails=function(msg, callback) {
 
 
-    var updateSignUpDetails = "update users set PASSWORD= '" + msg.password + "' where USER_ID='" + msg.userId + "' ";
-    mysql.fetchData(function (err, results) {
-
-        if (results.affectedRows > 0) {
 
 
             console.log("values updated");
@@ -121,13 +117,11 @@ exports.doUpdateUserDetails=function(msg, callback) {
             }
 
             mongo.updateOne("USER_DETAILS", whereJson, userDetails, userDetailsCallbackFunction);
-        }
 
 
-        else {
-            console.log("data update failed");
-        }
-    }, updateSignUpDetails);
+
+
+
 
 
 
