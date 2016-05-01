@@ -329,3 +329,61 @@ exports.doRejectProduct = function(msg, callback){
 
     mongo.updateOne('PRODUCTS',approvalWhereJSON,approvalSetJSON,callbackFunction);
  }
+
+exports.doShowAllCustomer = function(msg, callback)
+{
+var getCustomerPendingJSON = {"USER_TYPE":1};
+
+  var callbackFunction = function (err, results) {
+           if(err)
+    {
+      throw err;
+      json_responses = {"statusCode" : 401};
+      console.log("Error in doShowProductList");
+      //res.send(json_responses);
+      callback(null, json_responses);
+    }
+    else
+    {
+      Object.keys(results).forEach(function(index) {
+                // here, we'll first bit a list of all LogIds
+
+                var id = results[index].USER_ID;
+                user_id_arr.push(id);
+              });
+
+      var cardDetailJSON = {"USER_ID" : {$in : user_id_arr}};
+      console.log(user_id_arr);
+      mongo.find('CUSTOMER_DETAILS',cardDetailJSON,function(err,userDetails){
+           if(err)
+          {
+            throw err;
+            json_responses = {"statusCode" : 401};
+            console.log("Error in doShowProductList");
+            callback(null, json_responses);
+          }
+          else{
+
+
+
+            Object.keys(results).forEach(function(user) {
+              Object.keys(userDetails).forEach(function(card) {
+                if(userDetails[card].USER_ID == results[user].USER_ID){
+
+                  results[user].CARD_NUMBER = userDetails[card].CREDIT_CARD_DETAILS.CREDIT_CARD_NUMBER;
+
+                }
+                  });
+                });
+
+            results.CARD_NUMBER = userDetails;
+            json_responses = {"statusCode" : 200,"results":results};
+            callback(null, json_responses); 
+          }
+        });
+
+    }
+}
+    mongo.find('USER_DETAILS',getCustomerPendingJSON,callbackFunction);
+
+}
