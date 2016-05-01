@@ -1,206 +1,187 @@
-
 //Twitter Project with Mongo
-var pool = [],poolStatus = [];
-var CONNECTION_OPEN = 0, CONNECTION_BUSY = 1;
-var minimumPoolSize = 25, maximumPoolSize = 100;
+
 var MongoClient = require('mongodb').MongoClient;
-var mongoURL = "mongodb://localhost:27017/Twitter-Prototype";
+var mongoURL = "mongodb://localhost:27017/amazon_fresh";
 var db;
 var connected = false;
 
 /**
  * Connects to the MongoDB Database with the provided URL
  */
-
-
-function Pool()
-{
-    for(var i=0; i < minimumPoolSize; ++i)
-    {
-
-      MongoClient.connect(mongoURL, function(err, _db){
+function connect(url, callback){
+    MongoClient.connect(url, function(err, _db){
         if (err) { throw new Error('Could not connect: '+err); }
         db = _db;
         connected = true;
-        pool.push(db);
-        poolStatus.push(CONNECTION_OPEN);
-      });
-    }
-}
-
-function addConnectionToPool(){
-  MongoClient.connect(mongoURL, function(err, _db){
-    if (err) { throw new Error('Could not connect: '+err); }
-    db = _db;
-    connected = true;
-    pool.push(db);
-    poolStatus.push(CONNECTION_OPEN);
-  });
-}
-
-Pool.prototype.getConnection = function(){
-    var poolExausted = true;
-    var poolJSON;
-    for(var j = 0 ; j < pool.length ; j++)
-    {
-        if(poolStatus[j] === CONNECTION_OPEN)
-        {
-            poolStatus[j] = CONNECTION_BUSY;
-            poolExausted = false;
-            poolJSON = [{poolObject: pool[j],poolObjectLocation: j}];
-            return poolJSON;
-        }
-    }
-
-    if(poolExausted && pool.length < maximumPoolSize)
-    {
-        addConnectionToPool();
-        poolStatus[pool.length-1] = CONNECTION_BUSY;
-        poolExausted = false;
-        poolJSON = [{poolObject: pool[pool.length-1],poolObjectLocation: jCount}];
-        return poolJSON;
-    }
-}
-
-
-Pool.prototype.releaseConnection = function(connectionObjectLocation)
-{
-    if(poolStatus[connectionObjectLocation] === CONNECTION_BUSY)
-    {
-        poolStatus[connectionObjectLocation] = CONNECTION_OPEN;
-    }
+        console.log(connected +" is connected?");
+        callback(db);
+    });
 };
-
-var p = new Pool();
 
 /**
  * Returns the collection on the selected database
  */
 function collection(name){
     if (!connected) {
-      throw new Error('Must connect to Mongo before calling "collection"');
+        throw new Error('Must connect to Mongo before calling "collection"');
     }
     return db.collection(name);
 
 };
 
 
-exports.insertMany = function(collectionName,insertJSONArray,callback){
+exports.insertMany = function(collectionName,insertJSONArray,callbackFunction){
 
-    var connectionFromPool = p.getConnection();
-    var db = connectionFromPool[0].poolObject;
-    var connectionLocation = connectionFromPool[0].poolObjectLocation;
-
-		var collectionObject = db.collection(collectionName);
-		collectionObject.insertMany(insertJSONArray,callback);//native object call for NPM
-    p.releaseConnection(connectionLocation);
+    connect(mongoURL, function(db){
+        console.log('Connected to mongo at: ' + mongoURL);
+        var collectionObject = collection(collectionName);
+        collectionObject.insertMany(insertJSONArray,callbackFunction);//native object call for NPM
 //		db.close();
-
+    });
 }
 
-exports.insert = function(collectionName,insertJSON, callback){
+exports.insertOne = function(collectionName,insertJSON,callbackFunction){
 
-    var connectionFromPool = p.getConnection();
-    var db = connectionFromPool[0].poolObject;
-    var connectionLocation = connectionFromPool[0].poolObjectLocation;
-
-    var collectionObject = db.collection(collectionName);
-		collectionObject.insert(insertJSON,callback);//native object call for NPM
-    p.releaseConnection(connectionLocation);
+    connect(mongoURL, function(db){
+        console.log('Connected to mongo at: ' + mongoURL);
+        var collectionObject = collection(collectionName);
+        collectionObject.insertOne(insertJSON,callbackFunction);//native object call for NPM
 //		db.close();
+    });
+}
+
+exports.findOne = function(collectionName,queryJSON,callbackFunction)
+{
+    connect(mongoURL, function(db){
+        console.log('Connected to mongo at: ' + mongoURL);
+        var collectionObject = collection(collectionName);
+        console.log(queryJSON);
+        collectionObject.findOne(queryJSON,callbackFunction);
+    });
 
 }
 
-exports.updateRetweetCount = function(collectionName,updateJSON, increament){
-
-
-    var connectionFromPool = p.getConnection();
-    var db = connectionFromPool[0].poolObject;
-    var connectionLocation = connectionFromPool[0].poolObjectLocation;
-
-    var collectionObject = db.collection(collectionName);
-		collectionObject.updateOne(updateJSON,{$inc : {retweets_count : 1}});//native object call for NPM
-    p.releaseConnection(connectionLocation);
-//		db.close();
+exports.findWithProjection = function(collectionName,queryJSON, projectionJSON, callbackFunction)
+{
+    connect(mongoURL, function(db){
+        var collectionObject = collection(collectionName);
+        collectionObject.find(queryJSON).project(projectionJSON).toArray(callbackFunction);
+    });
 
 }
 
-
-exports.findOne = function(collectionName,queryJSON,callback){
-
-    var connectionFromPool = p.getConnection();
-    console.log(connectionFromPool);
-    var db = connectionFromPool[0].poolObject;
-    var connectionLocation = connectionFromPool[0].poolObjectLocation;
-        console.log(db);
-    var collectionObject = db.collection(collectionName);
-		collectionObject.findOne(queryJSON,callback);
-    p.releaseConnection(connectionLocation);
-}
-
-exports.updateOne = function(collectionName, queryJSON, updateJSON, callback){
-
-
-    var connectionFromPool = p.getConnection();
-    var db = connectionFromPool[0].poolObject;
-    var connectionLocation = connectionFromPool[0].poolObjectLocation;
-
-    var collectionObject = db.collection(collectionName);
-		collectionObject.updateOne(queryJSON, updateJSON, callback);//native object call for NPM
-    p.releaseConnection(connectionLocation);
-//		db.close();
-}
-
-
-exports.findOneUsingId = function(collectionName,idString,callback){
-  var o_id = new require('mongodb').ObjectID(idString);
-  var queryJSON = {_id : o_id};
-
-    var connectionFromPool = p.getConnection();
-    var db = connectionFromPool[0].poolObject;
-    var connectionLocation = connectionFromPool[0].poolObjectLocation;
-
-    var collectionObject = db.collection(collectionName);
-		collectionObject.findOne(queryJSON,callback);
-    p.releaseConnection(connectionLocation);
-}
-
-exports.find = function(collectionName,queryJSON,callback){
-
-    var connectionFromPool = p.getConnection();
-    var db = connectionFromPool[0].poolObject;
-    var connectionLocation = connectionFromPool[0].poolObjectLocation;
-
-    var collectionObject = db.collection(collectionName);
-		collectionObject.find(queryJSON).toArray(callback);
-    p.releaseConnection(connectionLocation);
-}
-
-exports.count = function(collectionName,queryJSON,callback){
-
-    var connectionFromPool = p.getConnection();
-    var db = connectionFromPool[0].poolObject;
-    var connectionLocation = connectionFromPool[0].poolObjectLocation;
-
-    var collectionObject = db.collection(collectionName);
-		collectionObject.count(queryJSON, callback);
-    p.releaseConnection(connectionLocation);
+exports.findOneWithProjection = function(collectionName,queryJSON, projectionJSON, callbackFunction)
+{
+    connect(mongoURL, function(db){
+        console.log('Connected to mongo at: ' + mongoURL);
+        var collectionObject = collection(collectionName);
+        console.log(queryJSON);
+        collectionObject.findOne(queryJSON, projectionJSON, callbackFunction);
+    });
 
 }
 
 
-exports.searchIt = function(collectionName,searchString,callback){
-  //searchString = ''\.*''+ searchString + '.*\';
+exports.searchIt = function(collectionName, searchString, searchType, callback){
 
   var regexValue='\.*'+searchString+'\.*';
-  var queryJSON = { hashtags : new RegExp(regexValue, 'i')};
-  console.log(queryJSON);
+//  var idString = new require('mongodb').ObjectID(searchString);
 
-    var connectionFromPool = p.getConnection();
-    var db = connectionFromPool[0].poolObject;
-    var connectionLocation = connectionFromPool[0].poolObjectLocation;
+  if(searchType == 1){
+    var queryJSON = { PRODUCT_NAME : new RegExp(regexValue, 'i'), IS_APPROVED : 1};
+  //  var queryJSON2 = {_id : idString};
+  } else if(searchType == 2){
+    var queryJSON = { FARMER_NAME : new RegExp(regexValue, 'i'), IS_APPROVED : 1};
+  //  var queryJSON2 = {_id : idString};
+  }
 
-    var collectionObject = db.collection(collectionName);
-		collectionObject.find(queryJSON).toArray(callback);
-    p.releaseConnection(connectionLocation);
+
+  connect(mongoURL, function(db){
+      var collectionObject = collection(collectionName);
+    	collectionObject.find(queryJSON).toArray(callback);
+  });
 }
+
+exports.searchItAdmin = function(collectionName, searchString, searchType, callback){
+
+  var regexValue = new RegExp('\.*'+searchString+'\.*', 'i');
+
+  if(searchType == 1){
+    var queryJSON = { $or : [{FIRST_NAME : regexValue}, {LAST_NAME : regexValue}], USER_TYPE : 1};
+  //  var queryJSON2 = {_id : idString};
+  } else if(searchType == 2){
+    var queryJSON = { $or : [{FIRST_NAME : regexValue}, {LAST_NAME : regexValue}], USER_TYPE : 2};
+  //  var queryJSON2 = {_id : idString};
+  } else if (searchType == 3) {
+    var queryJSON = {PRODUCT_NAME : regexValue};
+  } else if (searchType == 4) {
+    var queryJSON = {BILL_ID : Number(searchString)};
+  }
+
+
+  connect(mongoURL, function(db){
+      var collectionObject = collection(collectionName);
+    	collectionObject.find(queryJSON).toArray(callback);
+  });
+}
+
+exports.find = function(collectionName,queryJSON,callbackFunction)
+{
+    connect(mongoURL, function(db){
+        console.log('Connected to mongo at: ' + mongoURL);
+        var collectionObject = collection(collectionName);
+        console.log(queryJSON);
+        collectionObject.find(queryJSON).toArray(callbackFunction);
+    });
+
+}
+
+exports.findOneUsingId = function(collectionName,idString,callbackFunction) {
+
+    var o_id = new require('mongodb').ObjectID(idString);
+    var queryJSON = {_id : o_id};
+
+    connect(mongoURL, function(db){
+        console.log('Connected to mongo at: ' + mongoURL);
+        var collectionObject = collection(collectionName);
+        console.log(queryJSON);
+        collectionObject.findOne(queryJSON,callbackFunction);
+    });
+}
+
+exports.count = function(collectionName,queryJSON,callbackFunction)
+{
+    connect(mongoURL, function(db){
+        console.log('Connected to mongo at: ' + mongoURL);
+        var collectionObject = collection(collectionName);
+        console.log(queryJSON);
+        collectionObject.count(queryJSON,callbackFunction);
+    });
+
+}
+
+exports.removeOne = function(collectionName,queryJSON,callbackFunction)
+{
+    connect(mongoURL, function(db){
+        console.log('Connected to mongo at: ' + mongoURL);
+        var collectionObject = collection(collectionName);
+        console.log(queryJSON);
+        collectionObject.removeOne(queryJSON,callbackFunction);
+    });
+
+}
+
+exports.updateOne = function(collectionName,queryJSON,updateJSON,callbackFunction)
+{
+    connect(mongoURL, function(db){
+        console.log('Connected to mongo at: ' + mongoURL);
+        var collectionObject = collection(collectionName);
+        console.log(queryJSON);
+        collectionObject.updateOne(queryJSON,updateJSON,callbackFunction);
+    });
+
+}
+
+
+exports.connect = connect;
+exports.collection = collection;
