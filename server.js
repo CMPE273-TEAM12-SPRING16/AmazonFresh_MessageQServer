@@ -6,12 +6,21 @@ var users = require('./services/users');
 var admin = require('./services/admin');
 var farmer = require('./services/farmer');
 var product=require('./services/product');
-//Gaurav add your file variable here
+
+var redis = require('redis');
+var client = redis.createClient();
+
+////redis client on//client on
+client.on('error',function(error)
+    {
+     console.log("Error while opening the Socket Connection");  
+    });
+
 var cnn = amqp.createConnection({host:'127.0.0.1'});
 
 cnn.on('ready', function(){
     console.log("listening on login__signup_queue");
-    // Gaurav  enter heree
+    
     cnn.queue('loginSignupQueue', function(q){
         q.subscribe(function(message, headers, deliveryInfo, m) {
             util.log(util.format(deliveryInfo.routingKey, message));
@@ -146,7 +155,7 @@ cnn.on('ready', function(){
             util.log(util.format(deliveryInfo.routingKey, message));
             util.log("Message: " + JSON.stringify(message));
             util.log("DeliveryInfo: " + JSON.stringify(deliveryInfo));
-            // Chirag
+
             if(message.functionName == "doSearchAdmin")
             {
                 admin.doSearchAdmin(message, function (err, res) {
@@ -364,7 +373,6 @@ cnn.on('ready', function(){
 
                 });
             }
-            // Aneri
 
             else if (message.functionToBeImplemented == "fetchPurchaseHistory")
             {
@@ -420,15 +428,32 @@ cnn.on('ready', function(){
             else if (message.functionToBeImplemented == "getProductDetails")
             {
                 console.log("inside server");
-                product.getProductDetails(message, function (err, res) {
-
-                    //return index sent
-                    cnn.publish(m.replyTo, res, {
-                        contentType: 'application/json',
-                        contentEncoding: 'utf-8',
-                        correlationId: m.correlationId
+                client.get("select * from PRODUCTS where PRODUCT_ID='"+message.product_id+"'",function(error,result){
+                if(result)
+                {
+                    console.log("CACHE HIT!!!! "+result);
+                    // return index sent
+                    cnn.publish(m.replyTo, result, {
+                    contentType : 'application/json',
+                    contentEncoding : 'utf-8',
+                    correlationId : m.correlationId
                     });
+                }
+                else
+                {
+                        product.getProductDetails(message, function (err, res) {
 
+                        client.set("select * from PRODUCTS where PRODUCT_ID='"+message.product_id+"'",JSON.stringify(res));
+                        console.log("CACHE MISS server.js res : "+res);
+                        //return index sent
+                        cnn.publish(m.replyTo, res, {
+                            contentType: 'application/json',
+                            contentEncoding: 'utf-8',
+                            correlationId: m.correlationId
+                        });
+
+                        });
+                }
                 });
             }
 
