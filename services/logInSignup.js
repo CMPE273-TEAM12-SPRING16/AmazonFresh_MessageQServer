@@ -99,7 +99,7 @@ exports.handle_request=function(msg, callback)
 
 
                                 var farmerDetails = {
-                                    "USER_ID": msg.userId,
+                                    "USER_ID": userId,
                                     "AVERAGE_RATING": 0,
                                     "REVIEW_DETAILS": [],
                                     "INTRODUCTION_DETAILS":""
