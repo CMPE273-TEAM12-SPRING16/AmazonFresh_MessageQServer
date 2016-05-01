@@ -1,6 +1,3 @@
-/**
- * Created by aneri on 29-04-2016.
- */
 
 //Twitter Project with Mongo
 var pool = [],poolStatus = [];
@@ -21,24 +18,24 @@ function Pool()
     for(var i=0; i < minimumPoolSize; ++i)
     {
 
-        MongoClient.connect(mongoURL, function(err, _db){
-            if (err) { throw new Error('Could not connect: '+err); }
-            db = _db;
-            connected = true;
-            pool.push(db);
-            poolStatus.push(CONNECTION_OPEN);
-        });
-    }
-}
-
-function addConnectionToPool(){
-    MongoClient.connect(mongoURL, function(err, _db){
+      MongoClient.connect(mongoURL, function(err, _db){
         if (err) { throw new Error('Could not connect: '+err); }
         db = _db;
         connected = true;
         pool.push(db);
         poolStatus.push(CONNECTION_OPEN);
-    });
+      });
+    }
+}
+
+function addConnectionToPool(){
+  MongoClient.connect(mongoURL, function(err, _db){
+    if (err) { throw new Error('Could not connect: '+err); }
+    db = _db;
+    connected = true;
+    pool.push(db);
+    poolStatus.push(CONNECTION_OPEN);
+  });
 }
 
 Pool.prototype.getConnection = function(){
@@ -81,7 +78,7 @@ var p = new Pool();
  */
 function collection(name){
     if (!connected) {
-        throw new Error('Must connect to Mongo before calling "collection"');
+      throw new Error('Must connect to Mongo before calling "collection"');
     }
     return db.collection(name);
 
@@ -94,8 +91,8 @@ exports.insertMany = function(collectionName,insertJSONArray,callback){
     var db = connectionFromPool[0].poolObject;
     var connectionLocation = connectionFromPool[0].poolObjectLocation;
 
-    var collectionObject = db.collection(collectionName);
-    collectionObject.insertMany(insertJSONArray,callback);//native object call for NPM
+		var collectionObject = db.collection(collectionName);
+		collectionObject.insertMany(insertJSONArray,callback);//native object call for NPM
     p.releaseConnection(connectionLocation);
 //		db.close();
 
@@ -108,7 +105,7 @@ exports.insert = function(collectionName,insertJSON, callback){
     var connectionLocation = connectionFromPool[0].poolObjectLocation;
 
     var collectionObject = db.collection(collectionName);
-    collectionObject.insert(insertJSON,callback);//native object call for NPM
+		collectionObject.insert(insertJSON,callback);//native object call for NPM
     p.releaseConnection(connectionLocation);
 //		db.close();
 
@@ -122,7 +119,7 @@ exports.updateRetweetCount = function(collectionName,updateJSON, increament){
     var connectionLocation = connectionFromPool[0].poolObjectLocation;
 
     var collectionObject = db.collection(collectionName);
-    collectionObject.updateOne(updateJSON,{$inc : {retweets_count : 1}});//native object call for NPM
+		collectionObject.updateOne(updateJSON,{$inc : {retweets_count : 1}});//native object call for NPM
     p.releaseConnection(connectionLocation);
 //		db.close();
 
@@ -135,9 +132,9 @@ exports.findOne = function(collectionName,queryJSON,callback){
     console.log(connectionFromPool);
     var db = connectionFromPool[0].poolObject;
     var connectionLocation = connectionFromPool[0].poolObjectLocation;
-    console.log(db);
+        console.log(db);
     var collectionObject = db.collection(collectionName);
-    collectionObject.findOne(queryJSON,callback);
+		collectionObject.findOne(queryJSON,callback);
     p.releaseConnection(connectionLocation);
 }
 
@@ -149,22 +146,22 @@ exports.updateOne = function(collectionName, queryJSON, updateJSON, callback){
     var connectionLocation = connectionFromPool[0].poolObjectLocation;
 
     var collectionObject = db.collection(collectionName);
-    collectionObject.updateOne(queryJSON, updateJSON, callback);//native object call for NPM
+		collectionObject.updateOne(queryJSON, updateJSON, callback);//native object call for NPM
     p.releaseConnection(connectionLocation);
 //		db.close();
 }
 
 
 exports.findOneUsingId = function(collectionName,idString,callback){
-    var o_id = new require('mongodb').ObjectID(idString);
-    var queryJSON = {_id : o_id};
+  var o_id = new require('mongodb').ObjectID(idString);
+  var queryJSON = {_id : o_id};
 
     var connectionFromPool = p.getConnection();
     var db = connectionFromPool[0].poolObject;
     var connectionLocation = connectionFromPool[0].poolObjectLocation;
 
     var collectionObject = db.collection(collectionName);
-    collectionObject.findOne(queryJSON,callback);
+		collectionObject.findOne(queryJSON,callback);
     p.releaseConnection(connectionLocation);
 }
 
@@ -175,7 +172,7 @@ exports.find = function(collectionName,queryJSON,callback){
     var connectionLocation = connectionFromPool[0].poolObjectLocation;
 
     var collectionObject = db.collection(collectionName);
-    collectionObject.find(queryJSON).toArray(callback);
+		collectionObject.find(queryJSON).toArray(callback);
     p.releaseConnection(connectionLocation);
 }
 
@@ -186,24 +183,24 @@ exports.count = function(collectionName,queryJSON,callback){
     var connectionLocation = connectionFromPool[0].poolObjectLocation;
 
     var collectionObject = db.collection(collectionName);
-    collectionObject.count(queryJSON, callback);
+		collectionObject.count(queryJSON, callback);
     p.releaseConnection(connectionLocation);
 
 }
 
 
 exports.searchIt = function(collectionName,searchString,callback){
-    //searchString = ''\.*''+ searchString + '.*\';
+  //searchString = ''\.*''+ searchString + '.*\';
 
-    var regexValue='\.*'+searchString+'\.*';
-    var queryJSON = { hashtags : new RegExp(regexValue, 'i')};
-    console.log(queryJSON);
+  var regexValue='\.*'+searchString+'\.*';
+  var queryJSON = { hashtags : new RegExp(regexValue, 'i')};
+  console.log(queryJSON);
 
     var connectionFromPool = p.getConnection();
     var db = connectionFromPool[0].poolObject;
     var connectionLocation = connectionFromPool[0].poolObjectLocation;
 
     var collectionObject = db.collection(collectionName);
-    collectionObject.find(queryJSON).toArray(callback);
+		collectionObject.find(queryJSON).toArray(callback);
     p.releaseConnection(connectionLocation);
 }
