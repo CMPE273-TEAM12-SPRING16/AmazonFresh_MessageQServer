@@ -315,6 +315,21 @@ cnn.on('ready', function(){
 
                 });
             }
+
+            else if (message.functionToBeImplemented == "getProductDetails")
+            {
+                console.log("inside server");
+                product.getProductDetails(message, function (err, res) {
+
+                    //return index sent
+                    cnn.publish(m.replyTo, res, {
+                        contentType: 'application/json',
+                        contentEncoding: 'utf-8',
+                        correlationId: m.correlationId
+                    });
+
+                });
+            }
         });
     });
 

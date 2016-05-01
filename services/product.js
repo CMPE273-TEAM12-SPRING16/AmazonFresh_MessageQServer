@@ -51,3 +51,44 @@ console.log("inside services");
         }
     });
 }
+
+
+function getDateAndMonth(results){
+    console.log("getDateAndMonth");
+    var monthName = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var reviewArr = results.REVIEW_DETAILS;
+    for(var rev in results.REVIEW_DETAILS){
+        var date = results.REVIEW_DETAILS[rev].TIMESTAMP;
+        var d = new Date(date);
+        var month = monthName[d.getMonth()];
+        var day = d.getDate();
+        var year = d.getFullYear();
+        var reviewDate = month+" "+day+", "+year;
+        results.REVIEW_DETAILS[rev].REVIEWDATE = reviewDate;
+
+    }
+    return results;
+}
+
+exports.getProductDetails=function(msg, callback) {
+
+    var productId= msg.product_id;
+    var callbackFunction = function (err, results) {
+        console.log(results);
+        if (results) {
+            var reviews = getDateAndMonth(results);
+
+            var jsonResponse=({"productDetails": results});
+           callback(null,jsonResponse);
+        }
+
+        else {
+            var jsonResponse=({"statusCode": 401});
+            callback(null,jsonResponse);
+        }
+
+
+    }
+
+    mongo.findOneUsingId("PRODUCTS", productId, callbackFunction);
+}
