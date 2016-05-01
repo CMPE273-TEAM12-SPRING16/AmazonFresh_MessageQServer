@@ -305,3 +305,27 @@ exports.doShowPendingFarmerAprroval = function(msg, callback){
 
     mongo.updateOne('PRODUCTS',approvalWhereJSON,approvalSetJSON,callbackFunction);
  }
+
+exports.doRejectProduct = function(msg, callback){
+ var productId = new require('mongodb').ObjectID(msg.productId);
+ var callbackFunction = function (err, results) {
+   if(err)
+    {
+      throw err;
+      json_responses = {"statusCode" : 401};
+      console.log("Error in doShowProductList");
+      callback(null, json_responses);
+    }
+    else
+    {
+      console.log("Pending customer requests ");
+      json_responses = {"statusCode" : 200,"results":results};
+      callback(null, json_responses);
+    }
+    }
+
+    var approvalWhereJSON = {"_id" : productId};
+    var approvalSetJSON = {$set : {"IS_APPROVED" : 2}};
+
+    mongo.updateOne('PRODUCTS',approvalWhereJSON,approvalSetJSON,callbackFunction);
+ }
