@@ -116,7 +116,6 @@ exports.doApproveCustomer = function(msg, callback) {
          console.log(results.IS_APPROVED);
 
          console.log("Approve Requests ");
-         console.log(results);
          var json_responses = {"statusCode": 200, "results": results};
          callback(null, json_responses);
        }
@@ -153,7 +152,6 @@ exports.doRejectCustomer = function(msg, callback){
 
           console.log(results.IS_APPROVED);
       console.log("Pending customer requests ");
-      console.log(results);
       json_responses = {"statusCode" : 200,"results":results};
       callback(null, json_responses);
         }
@@ -242,7 +240,6 @@ exports.doShowPendingFarmerAprroval = function(msg, callback){
 
       if (results.affectedRows > 0) {
           console.log("Pending customer requests ");
-          console.log(results);
           json_responses = {"statusCode" : 200,"results":results};
           callback(null, json_responses);
         }
@@ -270,7 +267,6 @@ exports.doShowPendingFarmerAprroval = function(msg, callback){
     }
     else
     {
-      console.log(results);
       json_responses = {"statusCode" : 200,"results":results};
       callback(null, json_responses);
     }
@@ -387,3 +383,26 @@ var getCustomerPendingJSON = {"USER_TYPE":1};
     mongo.find('USER_DETAILS',getCustomerPendingJSON,callbackFunction);
 
 }
+
+
+exports.reviewProduct = function(msg, callback) {
+
+  var getProductPendingJSON = {};
+
+  var callbackFunction = function (err, results) {
+           if(err)
+    {
+      throw err;
+      json_responses = {"statusCode" : 401};
+      console.log("Error in doShowPendingProductAprroval");
+      callback(null, json_responses);
+    }
+    else
+    {
+      json_responses = {"statusCode" : 200,"results":results};
+      callback(null, json_responses);
+    }
+    }
+
+    mongo.find('PRODUCTS',getProductPendingJSON,callbackFunction);
+ };
