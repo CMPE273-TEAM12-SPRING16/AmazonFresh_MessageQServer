@@ -426,3 +426,36 @@ exports.reviewProduct = function(msg, callback) {
 
     mongo.find('PRODUCTS',getProductPendingJSON,callbackFunction);
  };
+
+
+exports.fetchAllBills = function(msg, callback) {
+
+    mongo.find("BILLING_INFORMATION", msg.queryJSON, function (err, result) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(JSON.stringify(result));
+            var jsonResponse = {
+                "statusCode": 200,
+                "result": result
+            };
+            callback(null, jsonResponse);
+        }
+    });
+}
+
+exports.showDeliveriesStat =function(msg, callback) {
+    var queryJSON={};
+    mongo.find("TRIP_DETAILS", queryJSON, function(err, result){
+        if(err){
+            console.log(err);
+        } else {
+            console.log(JSON.stringify(result));
+            var jsonResponse = {
+                "statusCode" : 200,
+                "result" : result
+            };
+            callback(null, jsonResponse);
+        }
+    });
+}
