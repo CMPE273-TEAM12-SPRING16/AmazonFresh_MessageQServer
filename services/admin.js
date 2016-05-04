@@ -11,8 +11,8 @@ exports.doSearchAdmin = function(msg, callback)
 {
   var searchString = msg.searchString;
   var searchType = msg.searchType;
-	var collectionName = msg.collectionName;	
-
+	var collectionName = msg.collectionName;
+  console.log("admin search");
   mongo.searchItAdmin(collectionName, searchString, searchType, function(err,searchRes){
 
     if(err){
@@ -36,7 +36,7 @@ exports.doSearchAdmin = function(msg, callback)
 }
 
 exports.doShowPendingCustAprroval = function(msg, callback) {
-  
+
   var userId = msg.userId;
   var getCustomerPendingJSON = msg.getCustomerPendingJSON;
 
@@ -256,7 +256,7 @@ exports.doShowPendingFarmerAprroval = function(msg, callback){
  exports.doShowPendingProductAprroval = function(msg, callback) {
   var userId = msg.userId;
   var getProductPendingJSON = msg.getProductPendingJSON;
-  
+
   var callbackFunction = function (err, results) {
   if(err)
     {
@@ -374,7 +374,7 @@ var getCustomerPendingJSON = {"USER_TYPE":1};
 
             results.CARD_NUMBER = userDetails;
             json_responses = {"statusCode" : 200,"results":results};
-            callback(null, json_responses); 
+            callback(null, json_responses);
           }
         });
 
@@ -393,12 +393,12 @@ exports.reviewFarmer = function(msg, callback) {
       throw err;
       json_responses = {"statusCode" : 401};
       console.log("Error in doShowProductList");
-      callback(null, json_responses); 
+      callback(null, json_responses);
     }
     else
     {
       json_responses = {"statusCode" : 200,"results":results};
-      callback(null, json_responses); 
+      callback(null, json_responses);
     }
     }
 

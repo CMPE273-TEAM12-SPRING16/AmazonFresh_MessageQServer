@@ -28,8 +28,6 @@ exports.doDeleteProduct=function(msg, callback) {
 
 exports.doSearch=function(msg, callback) {
 
-console.log("inside services");
-
     mongo.searchIt('PRODUCTS', msg.searchString, msg.searchType, function (err, searchRes) {
 
         if (err) {

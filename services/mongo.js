@@ -85,8 +85,7 @@ exports.findOneWithProjection = function(collectionName,queryJSON, projectionJSO
 exports.searchIt = function(collectionName, searchString, searchType, callback){
 
   var regexValue='\.*'+searchString+'\.*';
-//  var idString = new require('mongodb').ObjectID(searchString);
-
+  console.log(searchType);
   if(searchType == 1){
     var queryJSON = { PRODUCT_NAME : new RegExp(regexValue, 'i'), IS_APPROVED : 1};
   //  var queryJSON2 = {_id : idString};
