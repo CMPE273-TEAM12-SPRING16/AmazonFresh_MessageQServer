@@ -97,12 +97,12 @@ exports.searchIt = function(collectionName, searchString, searchType, callback){
 
   connect(mongoURL, function(db){
       var collectionObject = collection(collectionName);
-    	collectionObject.find(queryJSON).toArray(callback);
+    	collectionObject.find(queryJSON, {limit : 30}).toArray(callback);
   });
 }
 
 exports.searchItAdmin = function(collectionName, searchString, searchType, callback){
-
+  
   var regexValue = new RegExp('\.*'+searchString+'\.*', 'i');
 
   if(searchType == 1){
@@ -110,6 +110,7 @@ exports.searchItAdmin = function(collectionName, searchString, searchType, callb
   //  var queryJSON2 = {_id : idString};
   } else if(searchType == 2){
     var queryJSON = { $or : [{FIRST_NAME : regexValue}, {LAST_NAME : regexValue}], USER_TYPE : 2};
+    console.log("Query..........."+queryJSON);
   //  var queryJSON2 = {_id : idString};
   } else if (searchType == 3) {
     var queryJSON = {PRODUCT_NAME : regexValue};
@@ -120,7 +121,7 @@ exports.searchItAdmin = function(collectionName, searchString, searchType, callb
 
   connect(mongoURL, function(db){
       var collectionObject = collection(collectionName);
-    	collectionObject.find(queryJSON).toArray(callback);
+    	collectionObject.find(queryJSON, {limit : 30}).toArray(callback);
   });
 }
 
