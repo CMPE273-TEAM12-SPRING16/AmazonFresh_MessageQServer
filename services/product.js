@@ -96,7 +96,7 @@ exports.getProductDetails=function(msg, callback) {
 
 exports.doFetch10Products=function(msg, callback) {
 
-    getProductJSON = {IS_APPROVED: 1};
+    getProductJSON = {IS_APPROVED: 1, "count" : msg.count};
     var callbackFunction = function (err, results) {
         if (err) {
             throw err;
@@ -110,5 +110,10 @@ exports.doFetch10Products=function(msg, callback) {
         }
     }
 
-    mongo.find('PRODUCTS', getProductJSON, callbackFunction);
+    mongo.find30Products('PRODUCTS', getProductJSON, callbackFunction);
 }
+
+
+
+
+
