@@ -135,6 +135,17 @@ exports.find = function(collectionName,queryJSON,callbackFunction)
 
 }
 
+exports.findLimit = function(collectionName,queryJSON,callbackFunction)
+{
+    connect(mongoURL, function(db){
+        console.log('Connected to mongo at: ' + mongoURL);
+        var collectionObject = collection(collectionName);
+        console.log(queryJSON);
+        collectionObject.find(queryJSON,{limit : 50}).toArray(callbackFunction);
+    });
+
+}
+
 exports.find30Products = function(collectionName,queryJSON,callbackFunction)
 {
     var products = queryJSON.getProductJSON;
