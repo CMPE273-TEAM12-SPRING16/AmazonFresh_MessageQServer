@@ -56,10 +56,10 @@ exports.doShowPendingCustAprroval = function(msg, callback) {
         var id = results[index].USER_ID;
         user_id_arr.push(id);
       });
-      console.log(user_id_arr);
+      
       var cardDetailJSON = {"USER_ID" : {$in : user_id_arr}};
-      console.log(user_id_arr);
-      mongo.find('CUSTOMER_DETAILS',cardDetailJSON,function(err,userDetails){
+      
+      mongo.findLimit('CUSTOMER_DETAILS',cardDetailJSON,function(err,userDetails){
            if(err)
           {
             throw err;
@@ -75,7 +75,7 @@ exports.doShowPendingCustAprroval = function(msg, callback) {
             Object.keys(results).forEach(function(user) {
               Object.keys(userDetails).forEach(function(card) {
                 if(userDetails[card].USER_ID == results[user].USER_ID){
-                  console.log(userDetails[card].CREDIT_CARD_DETAILS.CREDIT_CARD_NUMBER);
+                  
                   results[user].CARD_NUMBER = userDetails[card].CREDIT_CARD_DETAILS.CREDIT_CARD_NUMBER;
 
                 }
@@ -184,7 +184,7 @@ exports.doShowPendingFarmerAprroval = function(msg, callback){
       }
     }
 
-    mongo.find('USER_DETAILS',getCustomerPendingJSON,callbackFunction);
+    mongo.findLimit('USER_DETAILS',getCustomerPendingJSON,callbackFunction);
  }
 
  exports.doApproveFarmer = function(msg, callback){
@@ -272,7 +272,7 @@ exports.doShowPendingFarmerAprroval = function(msg, callback){
     }
     }
 
-    mongo.find('PRODUCTS',getProductPendingJSON,callbackFunction);
+    mongo.findLimit('PRODUCTS',getProductPendingJSON,callbackFunction);
  };
 
  exports.doApproveProduct = function(msg, callback) {
@@ -430,7 +430,7 @@ exports.reviewProduct = function(msg, callback) {
 
 exports.fetchAllBills = function(msg, callback) {
 
-    mongo.find("BILLING_INFORMATION", msg.queryJSON, function (err, result) {
+    mongo.findLimit("BILLING_INFORMATION", msg.queryJSON, function (err, result) {
         if (err) {
             console.log(err);
         } else {
