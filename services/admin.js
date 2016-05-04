@@ -56,9 +56,9 @@ exports.doShowPendingCustAprroval = function(msg, callback) {
         var id = results[index].USER_ID;
         user_id_arr.push(id);
       });
-      
+
       var cardDetailJSON = {"USER_ID" : {$in : user_id_arr}};
-      
+
       mongo.findLimit('CUSTOMER_DETAILS',cardDetailJSON,function(err,userDetails){
            if(err)
           {
@@ -75,7 +75,7 @@ exports.doShowPendingCustAprroval = function(msg, callback) {
             Object.keys(results).forEach(function(user) {
               Object.keys(userDetails).forEach(function(card) {
                 if(userDetails[card].USER_ID == results[user].USER_ID){
-                  
+
                   results[user].CARD_NUMBER = userDetails[card].CREDIT_CARD_DETAILS.CREDIT_CARD_NUMBER;
 
                 }
@@ -434,7 +434,6 @@ exports.fetchAllBills = function(msg, callback) {
         if (err) {
             console.log(err);
         } else {
-            console.log(JSON.stringify(result));
             var jsonResponse = {
                 "statusCode": 200,
                 "result": result
